@@ -1,4 +1,4 @@
-package test;
+package test
 
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.DisposableBean
@@ -19,7 +19,7 @@ import redis.clients.jedis.Protocol
 import redis.embedded.RedisServer
 
 @Configuration
-//@EnableRedisHttpSession
+@EnableRedisHttpSession
 class SessionConfig {
 
     @Bean
@@ -43,6 +43,22 @@ class SessionConfig {
     @Bean
     RedisServerBean redisServer() {
         new RedisServerBean()
+    }
+
+    @Bean
+    FilterRegistrationBean springSessionFilter(SessionRepositoryFilter<? extends ExpiringSession> filter) {
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean()
+        registrationBean.setFilter(filter)
+        registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE + 10)
+        registrationBean
+    }
+
+    @Bean
+    FilterRegistrationBean sessionSynchronizerFilter(HttpSessionSynchronizer filter) {
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean()
+        registrationBean.setFilter(filter)
+        registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE + 11)
+        registrationBean
     }
 
     protected String redisHost() {
